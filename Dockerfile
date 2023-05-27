@@ -1,20 +1,17 @@
-# Base image
-FROM python:3.9
+# Import Ubuntu
+FROM ubuntu:20.04
 
-# Set the working directory in the container
+# Make /app dir
+RUN mkdir /app
+RUN chmod 777 /app
 WORKDIR /app
 
-# Copy the requirements.txt file to the container
-COPY requirements.txt .
+# Installation of Requirements
+COPY . .
 
-# Install the required dependencies
+RUN apt update && apt install -y --no-install-recommends git python3 python3-pip mkvtoolnix ffmpeg
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Copy the run.sh file to the container
-COPY run.sh .
 
-# Set execute permissions for the run.sh file
-RUN chmod +x run.sh
-
-# Define the command to be executed when the container starts
+# Start bot
 CMD ["bash", "run.sh"]
