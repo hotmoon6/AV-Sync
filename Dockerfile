@@ -3,7 +3,6 @@ FROM ubuntu:20.04
 
 # Make /app dir
 RUN mkdir /app
-RUN chmod 777 /app
 WORKDIR /app
 
 # Installation of Requirements
