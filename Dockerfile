@@ -3,11 +3,13 @@ FROM ubuntu:20.04
 
 # Make /app dir
 RUN mkdir /app
+RUN chmod 777 /app
 WORKDIR /app
 
 # Installation of Requirements
 COPY . .
-
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Kolkata
 RUN apt update && apt install -y --no-install-recommends git python3 python3-pip mkvtoolnix ffmpeg
 RUN pip3 install --no-cache-dir -r requirements.txt
 
