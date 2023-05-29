@@ -13,7 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import os
 import time
 
@@ -35,12 +34,24 @@ async def on_task_complete():
 
 async def handle_task(message: Message):
     try:
-        msg = await message.reply_text("<code>Downloading video...</code>")
+        msg = await message.reply_text("<code>Processing video...</code>")
         c_time = time.time()
-        filepath = await message.download(
-            file_name=download_dir,
-            progress=progress_for_pyrogram,
-            progress_args=("Downloading...", msg, c_time))
+        
+        # Check if the message contains a valid video file or a URL
+        if message.video:
+            # Process video file
+            filepath = await message.download(
+                file_name=download_dir,
+                progress=progress_for_pyrogram,
+                progress_args=("Downloading...", msg, c_time)
+            )
+        elif message.text and message.text.startswith("http"):
+            # Process video from URL
+            filepath = await download_video_from_url(message.text)
+        else:
+            await msg.edit_text("<code>Invalid video file or URL.</code>")
+            return
+        
         print(f'[Download]: {filepath}')
         await msg.edit_text('<code>Encoding...</code>')
         new_file = await encode(filepath)
@@ -49,7 +60,7 @@ async def handle_task(message: Message):
             await handle_upload(new_file, message, msg)
             await msg.edit_text('Video Encoded Successfully!')
         else:
-            await message.reply_text("<code>Something wents wrong while encoding your file.</code>")
+            await message.reply_text("<code>Something went wrong while encoding your file.</code>")
         os.remove(filepath)
     except MessageNotModified:
         pass
@@ -103,3 +114,22 @@ async def handle_upload(new_file, message, msg):
             progress_args=("Uploading ...", msg, c_time)
         )
     os.remove(new_file)
+
+
+async def download_video_from_url(url):
+    # Implement the logic to download the video from the given URL
+    # and return the local file path of the downloaded video file
+    # You can use libraries like `requests` or `httpx` for downloading the file
+    
+    # Example using `httpx` library:
+    import httpx
+    
+    filename = os.path.join(download_dir, f"{int(time.time())}.mp4")
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        with open(filename, "wb") as f:
+            f.write(response.content)
+    
+    return filename
+
