@@ -1,18 +1,3 @@
-# VideoEncoder - a telegram bot for compressing/encoding videos in h264 format.
-# Copyright (c) 2021 WeebTime/VideoEncoder
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import time
 
@@ -36,7 +21,7 @@ async def handle_task(message: Message):
     try:
         msg = await message.reply_text("<code>Processing video...</code>")
         c_time = time.time()
-        
+
         # Check if the message contains a valid video file or a URL
         if message.video:
             # Process video file
@@ -51,7 +36,7 @@ async def handle_task(message: Message):
         else:
             await msg.edit_text("<code>Invalid video file or URL.</code>")
             return
-        
+
         print(f'[Download]: {filepath}')
         await msg.edit_text('<code>Encoding...</code>')
         new_file = await encode(filepath)
@@ -119,6 +104,7 @@ async def handle_upload(new_file, message, msg):
 async def download_video_from_url(url):
     # Implement the logic to download the video from the given URL
     # and return the local file path of the downloaded video file
+    
     # You can use libraries like `requests` or `httpx` for downloading the file
     
     # Example using `httpx` library:
@@ -132,4 +118,3 @@ async def download_video_from_url(url):
             f.write(response.content)
     
     return filename
-
