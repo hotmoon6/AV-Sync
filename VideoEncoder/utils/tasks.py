@@ -1,6 +1,5 @@
 import os
 import time
-import requests
 
 from pyrogram.errors.exceptions.bad_request_400 import (MessageIdInvalid,
                                                         MessageNotModified)
@@ -20,24 +19,17 @@ async def on_task_complete():
 
 async def handle_task(message: Message):
     try:
-        msg = await message.reply_text("<code>Processing video...</code>")
+        msg = await message.reply_text("<code>Downloading video...</code>")
         c_time = time.time()
-
-        # Check if the message contains a valid video file or a URL
-        if message.video:
-            # Process video file
+        # Check if the message contains a valid URL
+        if message.entities and message.entities[0].type == "url":
+            url = message.entities[0].url
+            filepath = await download_video_from_url(url)
+        else:
             filepath = await message.download(
                 file_name=download_dir,
                 progress=progress_for_pyrogram,
-                progress_args=("Downloading...", msg, c_time)
-            )
-        elif message.text and message.text.startswith("http"):
-            # Process video from URL
-            filepath = await download_video_from_url(message.text)
-        else:
-            await msg.edit_text("<code>Invalid video file or URL.</code>")
-            return
-
+                progress_args=("Downloading...", msg, c_time))
         print(f'[Download]: {filepath}')
         await msg.edit_text('<code>Encoding...</code>')
         new_file = await encode(filepath)
@@ -103,11 +95,19 @@ async def handle_upload(new_file, message, msg):
 
 
 async def download_video_from_url(url):
-    filename = os.path.join(download_dir, f"{int(time.time())}.mp4")
+    # You can implement your own logic to download the video from the URL
+    # For example, you can use libraries like `youtube-dl`, `requests`, etc.
+    # Here's a basic example using the `requests` library:
+    import requests
 
     response = requests.get(url, stream=True)
-    with open(filename, "wb") as file:
-        for chunk in response.iter_content(chunk_size=8192):
+    response.raise_for_status()
+
+    # Generate a unique filename for the downloaded video
+    filepath = os.path.join(download_dir, f"{time.time()}.mp4")
+
+    with open(filepath, "wb") as file:
+        for chunk in response.iter_content(chunk_size=4096):
             file.write(chunk)
 
-    return filename
+    return filepath
