@@ -16,7 +16,7 @@
 
 from pyrogram import Client, filters
 
-from .. import (audio, crf, doc_thumb, preset, resolution, sudo_users, tune,
+from .. import (audio, crf, doc_thumb, preset, resolution, sudo_users, tuning, format, tune,
                 upload_doc)
 from ..utils.utils import check_user, output, start
 
@@ -52,9 +52,10 @@ async def vset(app, message):
     if not check:
         return
     text = f'''<b>Encode Settings</b>
-Tune: <code>{tune}</code> | <code>Preset: {preset}</code>
+Format: <code>{format}</code> | <code>Preset: {preset}</code>
 Audio: <code>{audio} | <code>CRF: {crf}</code>
-Resolution: <code>{resolution}</code>
+Tune: <code>{tuning}</code> | <code>Preset: {tune}</code>
+Resolution: <code>{resolution}p</code>
 
 <b>Upload Settings</b>
 Upload Mode: <code>{'Document' if (upload_doc) else 'Video' }</code>
