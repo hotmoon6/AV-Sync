@@ -1,5 +1,6 @@
 import os
 import time
+import requests
 
 from pyrogram.errors.exceptions.bad_request_400 import (MessageIdInvalid,
                                                         MessageNotModified)
@@ -102,19 +103,11 @@ async def handle_upload(new_file, message, msg):
 
 
 async def download_video_from_url(url):
-    # Implement the logic to download the video from the given URL
-    # and return the local file path of the downloaded video file
-    
-    # You can use libraries like `requests` or `httpx` for downloading the file
-    
-    # Example using `httpx` library:
-    import httpx
-    
     filename = os.path.join(download_dir, f"{int(time.time())}.mp4")
-    
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        with open(filename, "wb") as f:
-            f.write(response.content)
-    
+
+    response = requests.get(url, stream=True)
+    with open(filename, "wb") as file:
+        for chunk in response.iter_content(chunk_size=8192):
+            file.write(chunk)
+
     return filename
