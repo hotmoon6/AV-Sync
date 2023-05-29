@@ -47,6 +47,8 @@ preset = os.environ.get("PRESET")
 tune = os.environ.get("TUNE")
 audio = os.environ.get("AUDIO")
 crf = os.environ.get("CRF")
+tuning = os.environ.get("TUNING")
+format = os.environ.get("FORMAT")
 
 SOURCE_MESSAGE = '''
 # VideoEncoder - a telegram bot for compressing/encoding videos in h264 format.
