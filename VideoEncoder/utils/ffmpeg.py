@@ -30,6 +30,8 @@ from .. import encode_dir
 from .. import preset as p
 from .. import resolution as r
 from .. import tune as t
+from .. import tuning as tn
+from .. import format as fm
 
 
 def get_codec(filepath, channel='v:0'):
@@ -51,7 +53,10 @@ async def encode(filepath):
         print('[Encode]: ' + filepath)
 
     # Codec and Bits
-    codec = '-c:v libx264 -pix_fmt yuv420p'
+    if fm == 'x264':
+        codec = '-c:v libx264 -pix_fmt yuv420p'
+    elif fm == 'x265':
+        codec = '-c:v libx265 -pix_fmt yuv420p'
 
     # CRF
     crf = f'-crf {c}'
@@ -69,7 +74,10 @@ async def encode(filepath):
         preset = '-preset medium'
 
     # Optional
-    video_opts = f'-tune {t} -map 0:v? -map_chapters 0 -map_metadata 0'
+    if tn == 'on':
+        video_opts = f'-tune {t} -map 0:v? -map_chapters 0 -map_metadata 0'
+    elif tn == 'off':
+        video_opts = f'-map 0:v? -map_chapters 0 -map_metadata 0'
 
     # Copy Subtitles
     subs_i = get_codec(filepath, channel='s:0')
@@ -100,7 +108,7 @@ async def encode(filepath):
     elif r == '720':
         resolution = '-vf scale=1280:-2'
     elif r == '480':
-        resolution = '-vf scale=854:480'
+        resolution = '-vf scale=854:480'  # 720:-2    use it for other ratio except 9:16
     elif r == '360':
         resolution = '-vf scale=360:-2'
     else:
