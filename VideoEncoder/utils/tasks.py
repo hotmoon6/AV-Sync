@@ -1,3 +1,19 @@
+# VideoEncoder - a telegram bot for compressing/encoding videos in h264 format.
+# Copyright (c) 2021 WeebTime/VideoEncoder
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import os
 import time
 
@@ -21,15 +37,10 @@ async def handle_task(message: Message):
     try:
         msg = await message.reply_text("<code>Downloading video...</code>")
         c_time = time.time()
-        # Check if the message contains a valid URL
-        if message.entities and message.entities[0].type == "url":
-            url = message.entities[0].url
-            filepath = await download_video_from_url(url)
-        else:
-            filepath = await message.download(
-                file_name=download_dir,
-                progress=progress_for_pyrogram,
-                progress_args=("Downloading...", msg, c_time))
+        filepath = await message.download(
+            file_name=download_dir,
+            progress=progress_for_pyrogram,
+            progress_args=("Downloading...", msg, c_time))
         print(f'[Download]: {filepath}')
         await msg.edit_text('<code>Encoding...</code>')
         new_file = await encode(filepath)
@@ -38,7 +49,7 @@ async def handle_task(message: Message):
             await handle_upload(new_file, message, msg)
             await msg.edit_text('Video Encoded Successfully!')
         else:
-            await message.reply_text("<code>Something went wrong while encoding your file.</code>")
+            await message.reply_text("<code>Something wents wrong while encoding your file.</code>")
         os.remove(filepath)
     except MessageNotModified:
         pass
@@ -92,22 +103,3 @@ async def handle_upload(new_file, message, msg):
             progress_args=("Uploading ...", msg, c_time)
         )
     os.remove(new_file)
-
-
-async def download_video_from_url(url):
-    # You can implement your own logic to download the video from the URL
-    # For example, you can use libraries like `youtube-dl`, `requests`, etc.
-    # Here's a basic example using the `requests` library:
-    import requests
-
-    response = requests.get(url, stream=True)
-    response.raise_for_status()
-
-    # Generate a unique filename for the downloaded video
-    filepath = os.path.join(download_dir, f"{time.time()}.mp4")
-
-    with open(filepath, "wb") as file:
-        for chunk in response.iter_content(chunk_size=4096):
-            file.write(chunk)
-
-    return filepath
